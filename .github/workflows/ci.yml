@@ -1,0 +1,25 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  deskless:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            examples/bare/package-lock.json
+      - name: Install (kit + bare example)
+        run: |
+          npm ci
+          npm ci --prefix examples/bare
+      - name: verify:deskless
+        run: npm run verify:deskless

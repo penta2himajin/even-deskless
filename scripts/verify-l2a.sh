@@ -2,7 +2,7 @@
 # L2a: Vite + evenhub-simulator automation smoke (no USB / glasses).
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="${EVEN_DESKLESS_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
 EXAMPLE="${EXAMPLE_DIR:-$ROOT/examples/bare}"
 cd "$EXAMPLE"
 
@@ -102,5 +102,7 @@ fi
 PIDS+=($!)
 
 echo "verify-l2a: running smoke against :${AUTOMATION_PORT}"
+# pngjs resolves from the published kit package (or local kit root).
+export NODE_PATH="${ROOT}/node_modules${NODE_PATH:+:$NODE_PATH}"
 READY_MARKER="$READY_MARKER" node "$ROOT/scripts/l2a-sim-smoke.mjs" --base "http://127.0.0.1:${AUTOMATION_PORT}"
 echo "verify-l2a: OK"

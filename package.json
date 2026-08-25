@@ -1,20 +1,50 @@
 {
-  "name": "even-deskless",
-  "private": true,
+  "name": "@penta2himajin/even-deskless",
   "version": "0.1.0",
-  "description": "Deskless verification kit for Even Hub plugins",
+  "description": "Deskless verification kit for Even Hub plugins — maximize checks without glasses or a phone",
   "license": "MIT",
+  "type": "module",
   "engines": {
     "node": ">=20"
   },
+  "bin": {
+    "even-deskless": "./bin/even-deskless.mjs"
+  },
+  "files": [
+    "bin",
+    "scripts",
+    "docs/verification.md",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "verify:l0": "npm run verify:l0 --prefix examples/bare",
-    "verify:l2a": "bash scripts/verify-l2a.sh",
+    "verify:l2a": "node ./bin/even-deskless.mjs verify-l2a",
     "verify:deskless": "npm run verify:l0 && npm run verify:l2a",
     "dev": "npm run dev --prefix examples/bare",
-    "sim": "npm run sim --prefix examples/bare"
+    "sim": "npm run sim --prefix examples/bare",
+    "prepublishOnly": "npm run verify:l0"
   },
-  "devDependencies": {
+  "dependencies": {
     "pngjs": "^7.0.0"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/penta2himajin/even-deskless.git"
+  },
+  "bugs": {
+    "url": "https://github.com/penta2himajin/even-deskless/issues"
+  },
+  "homepage": "https://github.com/penta2himajin/even-deskless#readme",
+  "keywords": [
+    "even-realities",
+    "evenhub",
+    "smart-glasses",
+    "deskless",
+    "verification",
+    "evenhub-simulator"
+  ]
 }
