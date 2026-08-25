@@ -36,18 +36,25 @@ Consumer setup:
   1. Log console.info("<marker>") after createStartUpPageContainer
   2. Dev-depend on @evenrealities/evenhub-simulator (and vite)
   3. npm i -D @penta2himajin/even-deskless
+  4. Optional package.json evenDeskless: { readyMarker, appUrl }
 `)
 }
 
-function readConsumerReadyMarker(cwd) {
+function readConsumerDesklessConfig(cwd) {
   try {
     const pkg = JSON.parse(readFileSync(join(cwd, 'package.json'), 'utf8'))
-    const m = pkg.evenDeskless?.readyMarker
-    if (typeof m === 'string' && m.trim()) return m.trim()
+    const cfg = pkg.evenDeskless
+    if (!cfg || typeof cfg !== 'object') return {}
+    const readyMarker =
+      typeof cfg.readyMarker === 'string' && cfg.readyMarker.trim()
+        ? cfg.readyMarker.trim()
+        : null
+    const appUrl =
+      typeof cfg.appUrl === 'string' && cfg.appUrl.trim() ? cfg.appUrl.trim() : null
+    return { readyMarker, appUrl }
   } catch {
-    /* ignore */
+    return {}
   }
-  return null
 }
 
 function parseArgs(argv) {
@@ -117,10 +124,8 @@ function verifyL2a(opts) {
     console.error(`missing ${script}`)
     process.exit(1)
   }
-  const ready =
-    opts.ready ||
-    readConsumerReadyMarker(cwd) ||
-    '[even-deskless] ready'
+  const cfg = readConsumerDesklessConfig(cwd)
+  const ready = opts.ready || cfg.readyMarker || '[even-deskless] ready'
 
   // Prefer consumer app as EXAMPLE_DIR. Kit dogfood: if cwd is kit root, use examples/bare.
   let exampleDir = cwd
@@ -131,13 +136,22 @@ function verifyL2a(opts) {
     exampleDir = join(cwd, 'examples', 'bare')
   }
 
-  run('bash', [script], {
+  const env = {
     EXAMPLE_DIR: exampleDir,
     READY_MARKER: ready,
     VITE_PORT: String(opts.vitePort),
     AUTOMATION_PORT: String(opts.automationPort),
     EVEN_DESKLESS_ROOT: KIT_ROOT,
-  })
+  }
+  // CLI --port wins over a hardcoded host:port in package.json appUrl when paths match;
+  // consumers typically set a full URL including query (e.g. ?companionProbe=0).
+  if (process.env.APP_URL) {
+    env.APP_URL = process.env.APP_URL
+  } else if (cfg.appUrl) {
+    env.APP_URL = cfg.appUrl
+  }
+
+  run('bash', [script], env)
 }
 
 function main() {

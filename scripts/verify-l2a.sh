@@ -8,7 +8,8 @@ cd "$EXAMPLE"
 
 AUTOMATION_PORT="${AUTOMATION_PORT:-9898}"
 VITE_PORT="${VITE_PORT:-5173}"
-APP_URL="http://127.0.0.1:${VITE_PORT}/"
+# Consumers may override (e.g. omochat: http://127.0.0.1:5173/?companionProbe=0).
+APP_URL="${APP_URL:-http://127.0.0.1:${VITE_PORT}/}"
 READY_MARKER="${READY_MARKER:-[even-deskless] ready}"
 
 PIDS=()

@@ -47,6 +47,8 @@ console.info('[even-deskless] ready')
 }
 ```
 
+Optional `evenDeskless.appUrl` when the plugin needs a query string (e.g. `http://127.0.0.1:5173/?companionProbe=0`). Override with env `APP_URL` if needed.
+
 3. Run `npm run verify:deskless` (Linux CI needs `xvfb`; this repo’s workflow uses `ubuntu-latest` + the simulator’s headless path).
 
 ```bash
