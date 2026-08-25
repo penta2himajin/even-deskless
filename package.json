@@ -1,0 +1,20 @@
+{
+  "name": "even-deskless",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Deskless verification kit for Even Hub plugins",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "verify:l0": "npm run verify:l0 --prefix examples/bare",
+    "verify:l2a": "bash scripts/verify-l2a.sh",
+    "verify:deskless": "npm run verify:l0 && npm run verify:l2a",
+    "dev": "npm run dev --prefix examples/bare",
+    "sim": "npm run sim --prefix examples/bare"
+  },
+  "devDependencies": {
+    "pngjs": "^7.0.0"
+  }
+}

@@ -1,51 +1,64 @@
-# templates
+# even-deskless
 
 [日本語](./README.ja.md)
 
-Central repository for working conventions and templates used across penta2himajin's repos.
+Deskless verification kit for [Even Hub](https://hub.evenrealities.com/) plugins — maximize what you can check **without glasses or a phone**.
 
 ## What this is
 
-- **Audience**: AI coding agents (Claude Code, Cursor, GitHub Copilot, OpenAI Codex) working on penta2himajin's projects, plus the human author.
-- **Role**: source of canonical text for `AGENTS.md` (or `CLAUDE.md`), `.rules/`, `.github/ISSUE_TEMPLATE/`, and PR templates.
-- **License**: MIT — reuse freely.
+Even Realities publishes the SDK, CLI, simulator, and official templates. This repo sits **on top of that stack** as a verification layer:
 
-Each template is a starting point. Consumer repos override as needed.
+| Official | This kit |
+|---|---|
+| `@evenrealities/even_hub_sdk` | Consumed, not reimplemented |
+| `evenhub-templates` | Scaffold to *build* | `examples/bare` dogfoods deskless gates |
+| Hub Simulator (manual) | Automated L2a smoke (boot → ready → gestures → framebuffer) |
+| Desk / QR / Beta | Out of scope here (documented as desk-only) |
+
+**Non-goal:** reproducing BLE timing, lock-screen Beta parity, or LiteRT GPU. Those stay on a desk.
 
 ## Layout
 
-| Path | Purpose |
-|---|---|
-| `.github/ISSUE_TEMPLATE/handoff.md` | Session-handoff issue template. Copy to consumer repos. Also active for this repo (dogfood). |
-| `.github/PULL_REQUEST_TEMPLATE.md` | PR template requiring `Closes #N` linkage. |
-| `AGENTS.md` | Common development rules (TDD, commit conventions, PR workflow). Place at project root. Symlinked from `CLAUDE.md` for Claude Code compatibility. |
-| `CLAUDE.md` | Symlink to `AGENTS.md`. Kept for Claude Code backward compatibility. |
-| `.rules/` | Path-scoped rules (loaded on demand when matching files are read). |
-| `.claude/rules/` | Symlink to `.rules/`. For Claude Code compatibility. |
-| `claude-rules/` | Symlink to `.rules/`. Legacy name, kept for backward compatibility. |
-| `AGENTS-project-skeleton.md` | Skeleton for project-root `AGENTS.md`. |
-| `git-hooks/pre-push` | Shareable pre-push hook running format / lint / clippy. Install with `git config core.hooksPath git-hooks`. |
-| `docs/handoff-protocol.md` | Detailed protocol for issue-based session handoff. |
-| `docs/i18n-policy.md` | Suffix-file translation policy (`README.ja.md` next to `README.md`). |
+```
+docs/verification.md     # SoT: layers + Cloud vs desk
+examples/bare/           # Minimal plugin that logs [even-deskless] ready
+scripts/verify-l2a.sh    # Vite + simulator + smoke
+scripts/l2a-sim-smoke.mjs
+scripts/cloud-install.sh
+.cursor/                 # Cursor Cloud image (Node 20, xvfb, GTK/WebKit bits)
+```
 
-## How to use
+## Quick start
 
-For a new repo:
+```bash
+cd examples/bare
+npm ci
+npm run verify:l0          # typecheck + vitest
 
-1. Copy `AGENTS-project-skeleton.md` to the repo root as `AGENTS.md` and fill in the placeholders.
-2. Copy `.github/ISSUE_TEMPLATE/handoff.md` and `.github/PULL_REQUEST_TEMPLATE.md` verbatim.
-3. Optionally pull `.rules/examples/*` into `.rules/` and adjust globs.
-4. Copy `git-hooks/pre-push` into a `git-hooks/` directory in the consumer repo and run `git config core.hooksPath git-hooks`.
-5. If a Japanese audience is in scope, follow `docs/i18n-policy.md` to add `README.ja.md`.
+# From repo root (needs display or xvfb on Linux):
+npm run verify:deskless    # L0 + L2a simulator automation
+```
 
-For an existing repo:
+Manual simulator loop (same as upstream):
 
-- Adopt incrementally. Diff-merge against the existing `AGENTS.md` (or `CLAUDE.md`) rather than replacing wholesale.
+```bash
+cd examples/bare
+npm run dev                # terminal A
+npx evenhub-simulator http://127.0.0.1:5173   # terminal B
+```
 
-## SSOT precedence
+## Verification layers (summary)
 
-When templates here and consumer-repo files diverge, the consumer wins. Templates are descriptive, not authoritative. See `docs/handoff-protocol.md` for the full precedence rule.
+See [`docs/verification.md`](docs/verification.md).
+
+- **L0** — unit / static (tsc, vitest)
+- **L2a** — Hub Simulator automation (deskless)
+- **Desk** — QR / private / Beta + glasses (not required for this kit’s CI)
+
+Optional Android / companion WebView checks are **not** part of the default deskless gate. Add them in product repos that own a companion app.
 
 ## License
 
-MIT. See `LICENSE`.
+MIT — see [LICENSE](./LICENSE).
+
+Even Hub SDK / simulator / CLI are separately MIT-licensed by Even Realities; this kit does not relicense them.

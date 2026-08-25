@@ -1,79 +1,69 @@
-# <Project Name>
+# even-deskless
 
 ## Overview
 
-<!-- One to three paragraphs describing the project's purpose, target domain, and distinguishing characteristics. If detailed specs live under docs/, reference them with @docs/<file>.md. -->
+Deskless verification kit for Even Hub plugins. Maximize automated checks that run without glasses, USB phones, or Even Hub account UI. Complements official SDK / `evenhub-templates` / Hub Simulator — does not replace them.
+
+SoT for layers: @docs/verification.md
 
 ## Project Structure
 
-<!-- Directory layout with the role of each. Make explicit the boundary between source code, documentation, and generated artifacts. -->
-
 ```
-src/         # ...
-docs/        # ...
-tests/       # ...
+docs/                 # verification SoT, handoff, i18n
+examples/bare/        # dogfood plugin (Vite + SDK + ready marker)
+scripts/              # verify-l2a, smoke, cloud-install
+.cursor/              # Cursor Cloud Dockerfile + environment.json
 ```
 
 ## Development Setup
 
-<!-- Required toolchain pins, bootstrap commands, external dependencies (DB, MCP servers). -->
-
 ```bash
-# example
-cargo install ...
+cd examples/bare && npm ci
 
-# Pre-push hook (format / lint / clippy).
+# Optional pre-push hook (from repo root):
 cp git-hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
 ```
 
+Cursor Cloud: `.cursor/environment.json` runs `scripts/cloud-install.sh` on Builds (Node 20, xvfb). **No USB / Even Hub / glasses in managed Cloud VMs.**
+
 ## Build & Test
 
-<!-- Canonical verification commands. Must be runnable without prior setup so agents can self-verify. -->
-
 ```bash
-cargo build --workspace
-cargo test  --workspace
+npm run verify:l0          # examples/bare typecheck + vitest
+npm run verify:l2a         # simulator automation smoke
+npm run verify:deskless    # L0 + L2a
 ```
 
 ## Development Principles
 
-<!-- Project-specific additions only. Do not restate the common rules below. Examples:
-- "All features touching target-adjacent columns must be registered in LEAK_FEATURES."
-- "Public API changes require an ADR in docs/decisions/." -->
+- Follow TDD for kit scripts and the bare example.
+- Keep the default deskless gate free of Android SDK / companion APK requirements.
+- Document Cloud vs desk boundaries in `docs/verification.md`; do not paper over simulator limits.
 
 ## Architectural Boundaries
 
-<!-- Structural invariants that, if violated, break the design. Examples:
-- "core crate stays domain-agnostic."
-- "Generated code under gen/ is never hand-edited."
-- "Layer X must not depend on layer Y." -->
+- Kit code must not vendor or fork `@evenrealities/*` packages.
+- Product-specific companions (e.g. local LLM hosts) stay in product repos; optional recipes may be documented later, never required by `verify:deskless`.
 
 ## Prohibitions
 
-<!-- Numbered list of "do not" rules, written so each is verifiable. Do not duplicate the common prohibitions below. -->
-
-1. ...
-2. ...
+1. Do not require USB devices or Even Hub login for Cloud / `verify:deskless`.
+2. Do not treat Hub Simulator as L4 / glasses fidelity.
+3. Do not commit credentials or `.env*` secrets.
 
 ## Git Conventions
 
-<!-- Differences from the common rules below. Examples: scoped Conventional Commits like `feat(phase1d):`, mandatory issue links in PR bodies. -->
+- Conventional Commits.
+- Branch prefix: `cursor/<topic>`, `claude/<topic>`, or `human/<topic>`.
+- AI-authored commits: append agent trailer (no model name in trailer).
 
 ## Session Handoff
 
-Long-running workstreams use GitHub issues for cross-session continuity. See `docs/handoff-protocol.md` for the full protocol.
-
-- Label: `session-handoff`
-- One issue per workstream (not per session)
-- On session start, read the relevant handoff issue and confirm the **Next action** with the user before executing.
+See `docs/handoff-protocol.md`. Label: `session-handoff`.
 
 ## Internationalisation
 
-If this project ships a Japanese-facing entry point, follow `docs/i18n-policy.md`:
-
-- Translations are suffix files (`README.ja.md` next to `README.md`); no language directories.
-- Only `README.md` and the user-facing introduction tier of `docs/` are in scope. Engineering docs and ADRs stay English-only.
-- Each translated file carries a `> Source: <name>.md @ <sha>` header. PRs are never blocked on translation parity.
+Follow `docs/i18n-policy.md`. User-facing: `README.md` + `README.ja.md`. Engineering docs stay English-only.
 
 ---
 
@@ -93,28 +83,19 @@ When a test fails, fix the production code — do not delete, skip, or weaken th
 
 ### Measure, Don't Conjecture
 
-Base decisions on observed data, not assumptions. Before optimising, claiming a bottleneck, or asserting that something is slow or broken, measure it — profile, benchmark, log, or reproduce. When you report a cause, cite the measurement that supports it.
+Base decisions on observed data, not assumptions.
 
 ### Git Conventions
 
-- **Conventional Commits**: `feat:` `fix:` `docs:` `refactor:` `test:` `ci:` `chore:`. Project-specific prefixes (e.g. `data:`, `experiments:`) live in the project's `AGENTS.md`.
-- **Branch naming**: use a short prefix for the agent or author followed by a topic, e.g. `claude/<topic>`, `codex/<topic>`, or `human/<topic>`.
-- **Trailer**: when an AI agent authors the commit, append a trailer crediting the agent. Do not embed model name or session info in the trailer; put those in the commit body if needed.
-- **Pre-push hook**: install via `cp git-hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push` (or `git config core.hooksPath git-hooks`). The hook runs format / lint / clippy before every push. Tests are intentionally omitted — TDD keeps them green at commit time.
+- **Conventional Commits**: `feat:` `fix:` `docs:` `refactor:` `test:` `ci:` `chore:`.
+- **Branch naming**: short prefix + topic, e.g. `cursor/<topic>`.
+- **Trailer**: when an AI agent authors the commit, append a trailer crediting the agent. Do not embed model name or session info in the trailer.
+- **Pre-push hook**: install via `cp git-hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push` (or `git config core.hooksPath git-hooks`).
 
 ### Pull Requests
 
-- **Always ready for review.** Open PRs in the "ready" state, never as drafts. Draft PRs do not fire review-requested events and slow the loop.
-- **Auto-subscribe after creating a PR.** Immediately after the PR is created, subscribe to its activity without asking the user. Rationale: the user explicitly opted into the "agent opens and watches its own PRs" workflow at the template level, so the per-PR confirmation is noise. Unsubscribe only when the user says to stop, when the PR merges, or when it is closed unmerged.
-- **One PR per workstream**, matching the handoff issue. Reference the issue with `Closes #N` per `.github/PULL_REQUEST_TEMPLATE.md`.
-
-### Stream Idle Timeout Mitigation
-
-Cloud agent sessions occasionally fail with `Stream idle timeout - partial response received` on long output. To reduce risk:
-
-1. **Stage long writes.** For long documents or source files, write the skeleton (headings, function signatures, trait stubs) first, then fill each section in follow-up edits. Avoid single blocks larger than ~200 lines.
-2. **Watch out after large reads.** Reading a big file (e.g. `Cargo.lock`, large generated modules) and then immediately producing long output is a common trigger. Split into separate turns or excerpt only the relevant portion.
-3. **Recover carefully.** A timeout can still leave the file write completed. Run `git status` before retrying so the same content is not written twice.
+- Always ready for review (never draft-by-default).
+- One PR per workstream; reference handoff issues with `Closes #N` when applicable.
 
 ### Common Prohibitions
 
