@@ -1,6 +1,6 @@
 # even-deskless
 
-> Source: README.md @ pending-first-commit
+> Source: README.md @ 4239e6d
 
 [Even Hub](https://hub.evenrealities.com/) プラグイン向けの **deskless（実機なし）検証キット**です。グラスやスマホなしで確認できる範囲を最大化します。
 
