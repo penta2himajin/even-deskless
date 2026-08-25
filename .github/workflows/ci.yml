@@ -17,6 +17,17 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             examples/bare/package-lock.json
+      # Match .cursor/Dockerfile — evenhub-simulator (Flutter Linux) needs these.
+      - name: Install Linux simulator deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            xvfb \
+            libgtk-3-0 \
+            libwebkit2gtk-4.1-0 \
+            libnss3 \
+            libxss1 \
+            libasound2t64
       - name: Install (kit + bare example)
         run: |
           npm ci

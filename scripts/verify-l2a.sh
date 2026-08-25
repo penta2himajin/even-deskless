@@ -34,7 +34,29 @@ kill_sim_leftovers() {
   pkill -f "sim-.*/bin/evenhub-simulator.*--automation-port ${AUTOMATION_PORT}" 2>/dev/null || true
 }
 
+VITE_LOG="${VITE_LOG:-/tmp/even-deskless-vite-l2a.log}"
+SIM_LOG="${SIM_LOG:-/tmp/even-deskless-sim-l2a.log}"
+
+dump_logs() {
+  echo "verify-l2a: ---- vite log (tail) ----" >&2
+  if [[ -f "$VITE_LOG" ]]; then
+    tail -n 80 "$VITE_LOG" >&2 || true
+  else
+    echo "(missing $VITE_LOG)" >&2
+  fi
+  echo "verify-l2a: ---- sim log (tail) ----" >&2
+  if [[ -f "$SIM_LOG" ]]; then
+    tail -n 120 "$SIM_LOG" >&2 || true
+  else
+    echo "(missing $SIM_LOG)" >&2
+  fi
+}
+
 cleanup() {
+  local code=$?
+  if [[ $code -ne 0 ]]; then
+    dump_logs
+  fi
   local pid
   for pid in "${PIDS[@]:-}"; do
     kill "$pid" 2>/dev/null || true
@@ -59,7 +81,7 @@ if [[ ! -d node_modules ]]; then
 fi
 
 echo "verify-l2a: starting Vite on :${VITE_PORT}"
-npx vite --host 127.0.0.1 --port "$VITE_PORT" >/tmp/even-deskless-vite-l2a.log 2>&1 &
+npx vite --host 127.0.0.1 --port "$VITE_PORT" >"$VITE_LOG" 2>&1 &
 PIDS+=($!)
 
 echo "verify-l2a: waiting for Vite…"
@@ -98,7 +120,7 @@ else
   echo "verify-l2a: launching simulator (${SIM_BIN[0]})"
 fi
 
-"${SIM_BIN[@]}" >/tmp/even-deskless-sim-l2a.log 2>&1 &
+"${SIM_BIN[@]}" >"$SIM_LOG" 2>&1 &
 PIDS+=($!)
 
 echo "verify-l2a: running smoke against :${AUTOMATION_PORT}"
