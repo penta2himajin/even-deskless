@@ -73,24 +73,6 @@ scripts/l2a-sim-smoke.mjs
 .cursor/                 # Cursor Cloud image
 ```
 
-## Publish
-
-Uses **npm Trusted Publishing** (GitHub Actions OIDC) — no long-lived `NPM_TOKEN` in repo secrets.
-
-1. On [npmjs.com](https://www.npmjs.com): create / open `@penta2himajin/even-deskless` → **Trusted Publisher**
-   - Organization/user: `penta2himajin`
-   - Repository: `even-deskless`
-   - Workflow filename: `publish.yml` (filename only)
-   - Allow: `npm publish`
-2. Push a version tag:
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-If the package does not exist yet, publish once from a trusted setup (or create the empty package on npm) so you can attach the Trusted Publisher, then rely on tags only.
-
 ## License
 
 MIT — see [LICENSE](./LICENSE).
