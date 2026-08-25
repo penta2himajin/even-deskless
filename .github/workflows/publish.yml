@@ -32,5 +32,8 @@ jobs:
       - name: verify:l0 (prepublish gate)
         run: npm run verify:l0
       - name: Publish (Trusted Publishing / OIDC)
-        # Do not set NODE_AUTH_TOKEN — that forces the legacy token path.
-        run: npm publish --access public --provenance
+        # setup-node with registry-url injects a placeholder NODE_AUTH_TOKEN;
+        # unset it so npm uses OIDC Trusted Publishing instead of the token path.
+        run: |
+          unset NODE_AUTH_TOKEN
+          npm publish --access public --provenance

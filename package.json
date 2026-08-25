@@ -1,6 +1,6 @@
 {
   "name": "@penta2himajin/even-deskless",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Deskless verification kit for Even Hub plugins — maximize checks without glasses or a phone",
   "license": "MIT",
   "type": "module",
@@ -8,7 +8,7 @@
     "node": ">=20"
   },
   "bin": {
-    "even-deskless": "./bin/even-deskless.mjs"
+    "even-deskless": "bin/even-deskless.mjs"
   },
   "files": [
     "bin",
