@@ -24,6 +24,7 @@
     "dev": "npm run dev --prefix examples/bare",
     "sim": "npm run sim --prefix examples/bare",
     "qr:tunnel": "bash ./scripts/qr-tunnel.sh",
+    "test:qr-tunnel": "bash ./scripts/qr-tunnel.test.sh",
     "prepublishOnly": "npm run verify:l0"
   },
   "dependencies": {
