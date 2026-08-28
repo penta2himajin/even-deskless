@@ -55,6 +55,8 @@ npm run qr:tunnel --prefix examples/bare
 
 Quick Tunnel URLs change on every restart. Re-run steps 2–3 after reconnecting the tunnel.
 
+`npm run qr:tunnel` backgrounds `cloudflared` and reuses the URL in `CF_TUNNEL_LOG` (default `/tmp/even-deskless-cf-tunnel.log`) only after a short HTTPS probe succeeds. If the probe fails, it clears the log and starts a new quick tunnel.
+
 ## What this does / does not cover
 
 | Covered | Not covered |
@@ -65,7 +67,7 @@ Quick Tunnel URLs change on every restart. Re-run steps 2–3 after reconnecting
 
 ## Simulator IMU gap (related deskless note)
 
-Hub Simulator automation does **not** emit IMU samples (`imuData` stays null). Deskless gates should unit-test gesture classifiers on synthetic series (L0) and optionally inject mock IMU in the WebView (`?mockImu=1` or `window.__…InjectImu`) for L2a-style flows. Real IMU validation stays desk-only.
+Hub Simulator automation does **not** emit IMU samples (`imuData` stays null). Deskless gates should unit-test gesture classifiers on synthetic series (L0). Real IMU validation stays desk-only. This kit does **not** ship a WebView mock-IMU hook; product apps may add their own injection for L2a-style flows if needed.
 
 ## Logging caveat
 

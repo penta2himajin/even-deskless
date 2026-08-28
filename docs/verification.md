@@ -54,7 +54,7 @@ Hard limits of managed Cloud VMs: no USB devices, no Even Hub UI, no productized
 
 **Optional desk bridge from Cloud:** when a Cloud Agent already hosts Vite and you need a phone to Scan QR without a shared LAN IP, see [cloud-agent-qr.md](./cloud-agent-qr.md) (Cloudflare quick tunnel + `evenhub qr`). That path is **not** part of `verify:deskless`.
 
-Hub Simulator does not emit IMU samples. Treat gesture classifiers as L0/unit (synthetic series) or optional WebView mock injection; real IMU stays desk-only. See the same note.
+Hub Simulator does not emit IMU samples. Treat gesture classifiers as L0/unit (synthetic series); real IMU stays desk-only. This kit does not ship a mock-IMU hook — see the same note.
 
 ---
 
