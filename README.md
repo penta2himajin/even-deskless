@@ -19,6 +19,8 @@ Even Realities publishes the SDK, CLI, simulator, and official templates. This r
 
 `examples/bare` dogfoods the deskless gates. **Non-goal:** BLE timing, lock-screen Beta parity, or GPU inference on Cloud VMs.
 
+**Optional (not in `verify:deskless`):** Cloud Agent → glasses via Cloudflare quick tunnel + `evenhub qr` — see [`docs/cloud-agent-qr.md`](docs/cloud-agent-qr.md) and `npm run qr:tunnel`.
+
 ## Use in your Even plugin
 
 ```bash
