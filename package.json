@@ -23,6 +23,7 @@
     "verify:deskless": "npm run verify:l0 && npm run verify:l2a",
     "dev": "npm run dev --prefix examples/bare",
     "sim": "npm run sim --prefix examples/bare",
+    "qr:tunnel": "bash ./scripts/qr-tunnel.sh",
     "prepublishOnly": "npm run verify:l0"
   },
   "dependencies": {

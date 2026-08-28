@@ -13,6 +13,8 @@
     "test": "vitest run",
     "verify:l0": "npm run typecheck && npm test",
     "sim": "evenhub-simulator http://127.0.0.1:5173",
+    "qr": "evenhub qr --url http://127.0.0.1:5173",
+    "qr:tunnel": "bash ../../scripts/qr-tunnel.sh",
     "pack": "npm run build && evenhub pack app.json dist -o even-deskless-bare.ehpk"
   },
   "dependencies": {

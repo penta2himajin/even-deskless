@@ -9,9 +9,9 @@ SoT for layers: @docs/verification.md
 ## Project Structure
 
 ```
-docs/                 # verification SoT, handoff, i18n
+docs/                 # verification SoT, handoff, i18n, optional cloud-agent-qr
 examples/bare/        # dogfood plugin (Vite + SDK + ready marker)
-scripts/              # verify-l2a, smoke, cloud-install
+scripts/              # verify-l2a, smoke, cloud-install, optional qr-tunnel
 .cursor/              # Cursor Cloud Dockerfile + environment.json
 ```
 
