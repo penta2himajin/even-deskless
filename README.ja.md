@@ -1,6 +1,6 @@
 # even-deskless
 
-> Source: README.md @ 5ecaa76
+> Source: README.md @ 22790f9
 
 [Even Hub](https://hub.evenrealities.com/) プラグイン向けの **deskless（実機なし）検証キット**です。
 
