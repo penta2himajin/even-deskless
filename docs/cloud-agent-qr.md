@@ -8,6 +8,19 @@ Desk / QR / Beta remains out of the default gate. This note only records a pract
 
 ---
 
+## Prerequisites
+
+| Need | Notes |
+|---|---|
+| Vite (or similar) already listening on the target port | Default `5173`. The helper refuses to start if nothing answers on `http://127.0.0.1:$PORT/`. |
+| [`cloudflared`](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/) | On PATH, or set `CLOUDFLARED=/path/to/cloudflared` (the script also accepts `/tmp/cloudflared`). |
+| [`evenhub` CLI](https://www.npmjs.com/package/@evenrealities/evenhub-cli) | On PATH, or present under this kit’s `examples/bare/node_modules/.bin/evenhub` when developing the kit itself. |
+| Vite `allowedHosts: true` (or equivalent) | Required so `*.trycloudflare.com` Host headers are not rejected with 403. |
+
+Optional env overrides used by `scripts/qr-tunnel.sh`: `PORT`, `CF_TUNNEL_LOG`, `CLOUDFLARED`, `QR_TUNNEL_PROBE_TIMEOUT_SEC`.
+
+---
+
 ## Problem
 
 Cursor Cloud Agent port forwarding maps the VM port to **your laptop** `localhost:5173`. That is enough for a local browser, but the Even Realities app on a phone cannot use `http://127.0.0.1:5173` (that is the phone itself).
@@ -32,6 +45,13 @@ export default defineConfig({
 
 Without `allowedHosts: true`, Vite returns **403** / “This host is not allowed” when the request Host is the tunnel hostname.
 
+Start the dev server before the tunnel (example):
+
+```bash
+npm run dev
+# → http://127.0.0.1:5173
+```
+
 2. Start a quick HTTPS tunnel to the Vite port (Cloudflare quick tunnel is the path dogfooded here):
 
 ```bash
@@ -45,17 +65,26 @@ cloudflared tunnel --url http://127.0.0.1:5173
 evenhub qr --url "https://<random>.trycloudflare.com"
 ```
 
-Or, from this repo’s bare example after install:
+**Or** use the kit helper (starts / reuses the tunnel, then `exec`s `evenhub qr`):
+
+From this repo (kit checkout):
 
 ```bash
-npm run qr:tunnel --prefix examples/bare
+npm run qr:tunnel
+# or: npm run qr:tunnel --prefix examples/bare
+```
+
+From a plugin that installed `@penta2himajin/even-deskless`:
+
+```bash
+bash node_modules/@penta2himajin/even-deskless/scripts/qr-tunnel.sh
 ```
 
 4. In the Even Realities app: Even Hub → **Scan QR**.
 
 Quick Tunnel URLs change on every restart. Re-run steps 2–3 after reconnecting the tunnel.
 
-`npm run qr:tunnel` backgrounds `cloudflared` and reuses the URL in `CF_TUNNEL_LOG` (default `/tmp/even-deskless-cf-tunnel.log`) only after a short HTTPS probe succeeds. If the probe fails, it clears the log and starts a new quick tunnel.
+`qr-tunnel.sh` backgrounds `cloudflared` and reuses the URL in `CF_TUNNEL_LOG` (default `/tmp/even-deskless-cf-tunnel.log`) only after a short HTTPS probe succeeds. If the probe fails, it clears the log and starts a new quick tunnel.
 
 ## What this does / does not cover
 
