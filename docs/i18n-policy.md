@@ -79,6 +79,7 @@ Removing a translation: reverse the steps above.
 | English source | Japanese translation | Status |
 |---|---|---|
 | `README.md` | `README.ja.md` | Placeholder |
+| `docs/transit-open-data.md` | `docs/transit-open-data.ja.md` | Current |
 
 ## Trigger for revisiting
 
